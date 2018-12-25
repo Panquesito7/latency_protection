@@ -1,0 +1,1 @@
+This mod prevents players from digging through protected areas with high latency.

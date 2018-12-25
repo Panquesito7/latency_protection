@@ -1,0 +1,4 @@
+[Extra Protection]
+
+# The max jitter before refusing a player's actions.
+Protection_timeout (Protection timeout) float 2.0
