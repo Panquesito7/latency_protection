@@ -1,6 +1,6 @@
 players_glitching = {}
 
-local timeout = tonumber(minetest.settings:get("Protection_timeout")) or 2.0
+local timeout = tonumber(minetest.settings:get("protection_timeout")) or 2.0
 
 local function step()
 	for _, player in pairs(minetest.get_connected_players()) do
@@ -35,4 +35,5 @@ function minetest.is_protected(pos, name)
 		minetest.get_player_by_name(name):set_pos(g_pos)
 		return true
 	end
+	return old_is_protected(pos, name)
 end
