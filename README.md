@@ -1,1 +1,1 @@
-This mod prevents players from digging through protected areas, By teleporting them back to the last recorded position.
+This mod prevents players from digging through protected areas, By teleporting them back to the last recorded position. Also checks for the player's avg_jitter before recording the position.
