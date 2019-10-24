@@ -1,39 +1,39 @@
-local players_glitching = {}
+local players_position = {}
 
-local timeout = tonumber(minetest.settings:get("protection_timeout")) or 2.0
+local timer = tonumber(minetest.settings:get("timer")) or 20
 
 local function step()
 	for _, player in pairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
-		local info = minetest.get_player_information(name)
-		if name ~= nil and info ~= nil then
-			if info.avg_jitter > timeout and not players_glitching[name] then
-				players_glitching[name] = player:get_pos()
-			elseif info.avg_jitter < timeout and players_glitching[name] then
-				minetest.after(0.5, function() players_glitching[name] = nil end)
-			end
-		elseif name ~= nil then
-			if not players_glitching[name] then
-				players_glitching[name] = player:get_pos()
-			end
+		if not players_position[name].protection_violation then
+			players_position[name].pos = player:get_pos()
+		else
+			players_position[name].protection_violation = false
 		end
 	end
-	minetest.after(1, step)
+	minetest.after(timer, step)
 end
 
-minetest.register_on_leaveplayer(function(player)
-	players_glitching[player:get_player_name()] = nil
+minetest.register_on_joinplayer(function(player)
+	players_position[player:get_player_name()] = {pos = player:get_pos(), protection_violation = false}
 end)
 
-minetest.after(5, step)
+minetest.register_on_leaveplayer(function(player)
+	players_position[player:get_player_name()] = nil
+end)
 
-local old_is_protected = minetest.is_protected
+minetest.after(timer, step)
 
-function minetest.is_protected(pos, name)
-	local g_pos = players_glitching[name]
-	if g_pos then
-		minetest.get_player_by_name(name):set_pos(g_pos)
-		return true
+-- It has to register later for it to work.
+minetest.register_on_mods_loaded(function()
+	local old_is_protected = minetest.is_protected
+
+	function minetest.is_protected(pos, name)
+		local results = old_is_protected(pos, name)
+		if results then
+			minetest.get_player_by_name(name):set_pos(players_position[name].pos)
+			players_position[name].protection_violation = true
+		end
+		return results
 	end
-	return old_is_protected(pos, name)
-end
+end)
