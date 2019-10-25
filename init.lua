@@ -1,15 +1,15 @@
 local players_position = {}
 
-local timer = tonumber(minetest.settings:get("latency_protection.timer")) or 20
+local timer = 5
 local jitter_max = tonumber(minetest.settings:get("latency_protection.jitter_max")) or 1.5
 
 local function step()
-	for name, data in players_position do
+	for name, data in pairs(players_position) do
 		local info = minetest.get_player_information(name)
-		if not data[name].protection_violation and info.avg_jitter <= jitter_max then
-			data[name].pos = player:get_pos()
+		if not data.protection_violation and info.avg_jitter <= jitter_max then
+			data.pos = minetest.get_player_by_name(name):get_pos()
 		else
-			data[name].protection_violation = false
+			data.protection_violation = false
 		end
 		players_position[name] = data
 	end
