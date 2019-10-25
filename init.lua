@@ -1,6 +1,6 @@
 local players_position = {}
 
-local timer = 5
+local timer = tonumber(minetest.settings:get("latency_protection.timer")) or 20
 local jitter_max = tonumber(minetest.settings:get("latency_protection.jitter_max")) or 1.5
 
 local function step()
