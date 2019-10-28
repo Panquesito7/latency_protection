@@ -11,3 +11,9 @@ The max jitter a player can have before refusing the position update.
 ``` lua
 latency_protection.jitter_max = 1.5
 ```
+
+The time limit between is_protected calls. If the function is called too fast the player will be teleport.
+time_max is read in microseconds.
+``` lua
+latency_protection.time_max = 2000
+```

@@ -2,6 +2,7 @@ local players_position = {}
 
 local timer = tonumber(minetest.settings:get("latency_protection.timer")) or 20
 local jitter_max = tonumber(minetest.settings:get("latency_protection.jitter_max")) or 1.5
+local time_max = tonumber(minetest.settings:get("latency_protection.time_max")) or 2000
 
 local function step()
 	for name, data in pairs(players_position) do
@@ -17,7 +18,7 @@ local function step()
 end
 
 minetest.register_on_joinplayer(function(player)
-	players_position[player:get_player_name()] = {pos = player:get_pos(), protection_violation = false}
+	players_position[player:get_player_name()] = {pos = player:get_pos(), protection_violation = false, last_time = 0}
 end)
 
 minetest.register_on_leaveplayer(function(player)
@@ -34,8 +35,15 @@ minetest.register_on_mods_loaded(function()
 		local results = old_is_protected(pos, name)
 		local player = minetest.get_player_by_name(name)
 		if results and player then
-			player:set_pos(players_position[name].pos)
-			players_position[name].protection_violation = true
+			local data = players_position[name]
+			local now = minetest.get_us_time()
+			-- If is_protected is called too quickly from the previous call, the player will be teleported.
+			if now - data.last_time <= time_max then
+				player:set_pos(data.pos)
+				data.protection_violation = true
+			end
+			data.last_time = now
+			players_position[name] = data
 		end
 		return results
 	end
