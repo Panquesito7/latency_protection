@@ -32,14 +32,16 @@ minetest.register_on_mods_loaded(function()
 
 	function minetest.is_protected(pos, name)
 		local results = old_is_protected(pos, name)
-		if results then
-			local player = minetest.get_player_by_name(name)
-			if not player then
-				return results
-			end
+		local player = minetest.get_player_by_name(name)
+		if results and player then
 			player:set_pos(players_position[name].pos)
 			players_position[name].protection_violation = true
 		end
 		return results
 	end
+
+	minetest.register_on_respawnplayer(function(player)
+		players_position[player:get_player_name()].pos = player:get_pos()
+		return false
+	end)
 end)
