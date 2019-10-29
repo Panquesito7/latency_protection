@@ -34,5 +34,5 @@ Set what type of punishment to be given to a player.
 Teleport the player.
 Damage the player.
 ``` lua
-latency_protection.punishment = damage
+latency_protection.punishment = "damage"
 ```
