@@ -1,4 +1,5 @@
 # Latency Protection
+Latency protection mod attempts to prevent players from glitching through protected nodes. By either teleporting the player or damaging them.
 
 # Damage mode
 This mode attempts to prevent players from glitching through protected nodes. By damaging players who interact with a protected position too fast.
